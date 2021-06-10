@@ -184,7 +184,7 @@ void Calculator::ToReversePolishNotation(string& str) {
             //вытащить в vector все операции относящиеся к предыд аргументу
             while (!stack.empty() && (stack.top()->getNodetypename() == ParserName::BinaryOperation ||
                 (stack.top()->getNodetypename() == ParserName::UnaryOperation)))
-            {
+            {  
                 vec.push_back(stack.top());
                 stack.pop();
             }
