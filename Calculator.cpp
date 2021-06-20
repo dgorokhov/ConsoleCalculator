@@ -150,10 +150,11 @@ void Calculator::ToReversePolishNotation(string& str) {
             }
             stack.push(node);
             break;
-
+        //открыввающая скобка
         case ParserName::CompoundStart:
             stack.push(node);
             break;
+        //закрыввающая скобка
         case ParserName::CompoundEnd: {
             int counter = 1;
             while ((!stack.empty() && (stack.top()->getNodetypename() != ParserName::CompoundStart)))
