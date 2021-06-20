@@ -28,12 +28,12 @@ Supports arithmetic, trigonometric, logarithmic, some statistic functions.
 |tan(X) | Tangents of X  
 |cotan(X) | Cotangents of X  
 |log(X; base) | Logarithm of X. Ex: log(8, 2) = 3  
-|ln(X) Natural| logarithm of X (exponent is the base)  
+|ln(X)| Natural logarithm of X (exponent is the base)  
 |lg(X) |Binary logarithm of X (2 is the base). Ex: lg(8) = 3  
 |exp |Exponent = 2.71828182845904523536...  
 |pi |Pi = 3.14159265358979...  
 
-####Operands inside function calls must be delimited by ;  
-####You can build complex expressions like:
+Operands inside function calls must be delimited by ;  
+You can build complex expressions like:
 
 ((0b1101001+pow(3;5.5)) * max(0x9123A; 33+2^arithmean(12; ln(11); 55 \| 66; !20); 11)) / (13 * 12)
