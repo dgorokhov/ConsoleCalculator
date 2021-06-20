@@ -19,6 +19,7 @@ mono_crash.*
 # Build results
 ![Dd]ebug/*/*.exe
 !x64/Debug/ConsoleCalculator.exe
+!bin_console_calc/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
