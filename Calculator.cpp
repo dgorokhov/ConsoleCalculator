@@ -103,8 +103,10 @@ void Calculator::ToReversePolishNotation(string& str) {
 
     //очистить вектор перед новым расчетом
     int i = vec.size() - 1;
-    while (i >= 0) 
-        delete vec[i], vec.pop_back(), i--;
+    while (i >= 0)
+    {
+        delete vec[i]; vec.pop_back(); i--;
+    }
     
 
     while (str.length()) {
@@ -218,19 +220,19 @@ void Calculator::ToReversePolishNotation(string& str) {
 
 
 //Вычисление ОПЗ (Обратной польской нотации)
-double Calculator::Execute()
+long double Calculator::Execute()
 {
-    stack<double> stack;
+    stack<long double> stack;
 
     unsigned int v = 0;
     while (v < vec.size())
     {
-        double operands[MAXOPERANDCOUNT];
+        long double operands[MAXOPERANDCOUNT];
         NodeType* nodetype = vec[v]->getNodetype();
         switch (vec[v]->getNodetypename()) {
 
         case ParserName::Number:
-            //посчитать число (из строки в double) и положить его в стек
+            //посчитать число (из строки в long double) и положить его в стек
             stack.push(nodetype->Exec(nullptr, 1, vec[v]->getStrvalue()));
             break;
 
@@ -261,7 +263,7 @@ double Calculator::Execute()
             //проверить совпадает ли кол-во операндов необходимое Compound и тому что записано
             int i = dynamic_cast<CompoundStart*>(nodetype)->getoperandsneeded();
             if (i != 0 && vec[v]->args != i)
-                throw string("Parsing error: opnd count mismatch.");
+                throw string("Parsing error: operand count mismatch.");
             //выбраь операнды из стека
             i = vec[v]->args - 1;
             while (i >= 0 && !stack.empty() && i < MAXOPERANDCOUNT) {

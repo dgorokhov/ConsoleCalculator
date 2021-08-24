@@ -33,7 +33,7 @@ public:
     //в обратную польскую нотацию (ОПЗ)
     void ToReversePolishNotation(string& str);
     //Вычисление ОПЗ (Обратной польской нотации)
-    double Execute();
+    long double Execute();
 };
 
 #endif

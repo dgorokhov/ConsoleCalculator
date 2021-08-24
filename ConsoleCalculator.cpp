@@ -3,17 +3,8 @@
 #include <memory>
 #include "Calculator.h"
 
-/*
-функции round, trunc, abs, random, lg ln log
-integral(func(),a,b)
 
-
-
-
-*/
-
-
-void DelSpaceSymbols(string& s) {
+void DelJunkSymbols(string& s) {
     static char todel[] = { ' ','\n','\r','\v','\f','\t' };
     string::size_type pos = string::npos;
     for (char i : todel) {
@@ -25,7 +16,7 @@ void DelSpaceSymbols(string& s) {
     }
 };
 
-const Calculator& Init()
+Calculator& Init()
 {
     auto Calc = new Calculator();
     //base
@@ -92,7 +83,7 @@ int main()
         try {
             cout << prompt;
             getline(std::cin, rpn);
-            DelSpaceSymbols(rpn);
+            DelJunkSymbols(rpn);
             if (rpn == "exit" || rpn == "quit") return 0;
             //cout << rpn << endl;
             calc->ToReversePolishNotation(rpn);

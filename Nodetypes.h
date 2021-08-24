@@ -5,7 +5,7 @@
 
 constexpr int MAXFOLLOWEDBY = 10;
 constexpr int MAXOPERANDCOUNT = 50;
-constexpr double TooSmallNumber = 10E-20;
+constexpr long double TooSmallNumber = 10E-20;
 
 
 using namespace std;
@@ -72,10 +72,10 @@ public:
         return false;
     }
     string getSymbolset() const { return _symbolset; };
-    //функция "Am I?" возвращает
-    // -1 если строка-параметр не может быть объектом этого типа
-    // позицию в строке которвая явл-ся следующей за последней позицией подстроки которая явл-ся 
-    //данным класом: Number.Ami("12+23") вернет 3
+    //функция "CanIStartWith" возвращает
+    // -1 если строка-параметр не может быть объектом этого потомка Nodetype
+    //или позицию в строке которвая явл-ся следующей за последней позицией подстроки которая явл-ся 
+    //данным класом: для класса Number CanIStartWith("12+23") вернет 3
     virtual int CanIStartWith(string str) const
     {
         if (_len == 0) {
@@ -100,7 +100,7 @@ public:
         opndcount - их кол-во
         str - строка (только для простых типов (Number) непосредственно преобразуемых в число)
     */
-    virtual double Exec (const double opnd[], int opndcount, string str) const { return 0.0; };
+    virtual long double Exec (const long double opnd[], int opndcount, string str) const { return 0.0; };
 };
 
 
@@ -117,9 +117,9 @@ public:
         _followedbycount = 3;
     };
     ParserName name() const override { return ParserName::Number; };
-    double Exec(const double opnd[], int opndcount, string str) const override
+    long double Exec(const long double opnd[], int opndcount, string str) const override
     {
-        return stof(str);   //из строки в double
+        return stof(str);   //из строки в long double
     }
 };
 
@@ -151,11 +151,11 @@ public:
         else return -1;
     }
 
-    double Exec(const double opnd[], int opndcount, string str) const override
+    long double Exec(const long double opnd[], int opndcount, string str) const override
     {
-        //из строки 0b0111011101 в double
+        //из строки 0b0111011101 в long double
         int i = str.length() - 1;
-        double sum{ 0.0 };
+        long double sum{ 0.0 };
         while (i >= 2)
             sum += str.at(i) == '0' ? 0 : pow(2, str.length() - 1 - i), --i;
         return sum;
@@ -191,11 +191,11 @@ public:
         else return -1;
     }
 
-    double Exec(const double opnd[], int opndcount, string str) const override
+    long double Exec(const long double opnd[], int opndcount, string str) const override
     {
-        //из строки 0x в double
+        //из строки 0x в long double
         int i = str.length() - 1;
-        double sum{ 0.0 };
+        long double sum{ 0.0 };
         while (i >= 2) {
             if (str.at(i) >= 65)
                 sum += (str.at(i) - 55) * pow(16, str.length() - 1 - i);
@@ -226,7 +226,7 @@ public:
         else
             return -1;
     }
-    double Exec(const double opnd[], int opndcount, string str) const override { return 0.0;}
+    long double Exec(const long double opnd[], int opndcount, string str) const override { return 0.0;}
 };
 
 class BinaryOperation : public NodeType {
@@ -277,7 +277,7 @@ public:
        }
     int getoperandsneeded() const { return _operandsneeded; };
     ParserName name()  const override { return ParserName::CompoundStart; } ;
-    double Exec(const double opnd[], int opndcount, string str) const override {
+    long double Exec(const long double opnd[], int opndcount, string str) const override {
         return opnd[0];
     };
 
@@ -304,7 +304,7 @@ public:
         _followedbycount =4;
        }
     ParserName name()  const override { return ParserName::CompoundEnd; } ;
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         return opnd[0];
     };
@@ -345,7 +345,7 @@ protected:
 public:
     int args = 0; // кол-во аргументов (заполняется при вычислении ОПН)
     Node(NodeType& nodetype, string strvalue) : 
-        _nodetype(&nodetype), _strvalue(strvalue) 
+        _strvalue(strvalue), _nodetype(&nodetype)
     {}
     string getStrvalue() const { return _strvalue; };
     NodeType* getNodetype() const { return _nodetype; };
@@ -378,7 +378,7 @@ public:
         _followedby[2] = ParserName::UnaryOperation;
         _followedbycount =3;
     };
-    double Exec(const double opnd[], int opndcount, string str) const override {
+    long double Exec(const long double opnd[], int opndcount, string str) const override {
         return ( - opnd[0]);
     };
 };
@@ -386,8 +386,8 @@ public:
 class Addition: public BinaryOperation {
 public:
     Addition() : BinaryOperation ("+",Priority::Low) {};
-    double Exec(const double opnd[], int opndcount, string str)  const override {
-        double op2 = opnd[0] + *(opnd + 1);
+    long double Exec(const long double opnd[], int opndcount, string str)  const override {
+        long double op2 = opnd[0] + *(opnd + 1);
         return ( op2 );
     };
 };
@@ -395,9 +395,9 @@ public:
 class Substraction: public BinaryOperation {
 public:
     Substraction() : BinaryOperation("-", Priority::Low) {};
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double op2= opnd[0] - (*(opnd+1));
+        long double op2= opnd[0] - (*(opnd+1));
         return ( op2 );
     };
 };
@@ -406,9 +406,9 @@ public:
 class Multiplication: public BinaryOperation {
 public:
     Multiplication() : BinaryOperation ("*",Priority::Middle) {};
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double op2 = opnd[0] * (*(opnd + 1));
+        long double op2 = opnd[0] * (*(opnd + 1));
         return ( op2 );
     };
 };
@@ -416,7 +416,7 @@ public:
 class Division: public BinaryOperation {
 public:
     Division() : BinaryOperation ("/",Priority::Middle) {};
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         if (abs(*(opnd+1)) < TooSmallNumber)
             throw string ("Division: divider is zero or too small.");
@@ -432,7 +432,7 @@ public:
         _about = "X & Y";
         _usecase = "Bit AND";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         long long arg1 = round(opnd[0]);
         long long arg2 = round(*(opnd + 1));
@@ -447,7 +447,7 @@ public:
         _about = "X | Y";
         _usecase = "Bit OR";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         long long arg1 = round(opnd[0]);
         long long arg2 = round(*(opnd + 1));
@@ -462,7 +462,7 @@ public:
         _about = "X ^ Y";
         _usecase = "Bit XOR";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         unsigned long long arg1 = round(opnd[0]);
         unsigned long long arg2 = round(*(opnd + 1));
@@ -477,7 +477,7 @@ public:
         _about = "~ X";
         _usecase = "Bit NOT";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         long long arg = round(opnd[0]);
         return  ~arg;
@@ -491,9 +491,9 @@ public:
         _about = "!X"; 
         _usecase = "Factorial of X";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double result = 1;
+        long double result = 1;
         for (int i = 1; i <= round(opnd[0]); i++) {
             result *= i;
         }
@@ -517,7 +517,7 @@ public:
         _about = "abs(X)"; 
         _usecase = "Absolule value of X";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         return abs(*(opnd));
     };
@@ -530,7 +530,7 @@ public:
         _about = "trunc(X)"; 
         _usecase = "Eliminates fractional part of X";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         return trunc(*(opnd));
     };
@@ -543,7 +543,7 @@ public:
         _about = "round(X)"; 
         _usecase = "Rounds X to nearest integer number";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         return trunc(*(opnd));
     };
@@ -556,9 +556,9 @@ public:
         _about = "pow(X, Y)";
         _usecase = "Pow(X, Y). Ex: pow(2, 3) = 8";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override
+    long double Exec(const long double opnd[], int opndcount, string str)  const override
     {
-        double op2 = pow(opnd[0], *(opnd + 1));
+        long double op2 = pow(opnd[0], *(opnd + 1));
         return (op2);
     };
 };
@@ -570,7 +570,7 @@ public:
         _about = "pi";
         _usecase = "Pi = 3.14159265358979...";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         return 3.14159265358979323846264338327;
     }
@@ -584,7 +584,7 @@ public:
         _about = "sin(X)";
         _usecase = "Sines of X";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         return sin(*(opnd));
     };
@@ -598,7 +598,7 @@ public:
         _usecase = "Cosines of X";
     };
 
-    double Exec(const double opnd[], int opndcount, string str)  const override
+    long double Exec(const long double opnd[], int opndcount, string str)  const override
     {
         return cos(*(opnd));
     };
@@ -611,9 +611,9 @@ public:
         _about = "tan(X)";
         _usecase = "Tangents of X";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double csn = cos(*opnd);
+        long double csn = cos(*opnd);
         if ( abs(csn) < TooSmallNumber )
             throw string("Tangents: function is not defined for this angle.");
         else
@@ -629,8 +629,8 @@ public:
         _about = "cotan(X)";
         _usecase = "Cotangents of X";
     };
-    double Exec(const double opnd[], int opndcount, string str)  const override {
-        double ssn = sin(*opnd);
+    long double Exec(const long double opnd[], int opndcount, string str)  const override {
+        long double ssn = sin(*opnd);
         if ( abs(ssn) < TooSmallNumber )
             throw string("Cotangents: function is not defined for this angle.");
         else
@@ -648,7 +648,7 @@ public:
         _about= "exp";
         _usecase = "Exponent = 2.71828182845904523536...";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         return 2.71828182845904523536028747135266249;
         }
@@ -662,7 +662,7 @@ public:
         _about = "ln(X)";
         _usecase = "Natural logarithm of X (exponent is the base)";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         if ( (*opnd) < 0 )
             throw string("Logarithm: function is not defined for negatives.");
@@ -678,12 +678,12 @@ public:
         _about = "log(X; base)";
         _usecase = "Logarithm of X. Ex: log(8, 2) = 3";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         if ( (*opnd) < 0 )
             throw string("Logarithm: function is not defined for negatives.");
         else {
-            double znam = log(*(opnd+1));
+            long double znam = log(*(opnd+1));
             if (znam > TooSmallNumber)
                 return log(*opnd)/znam;
             else
@@ -699,7 +699,7 @@ public:
         _about = "lg(X)";
         _usecase = "Binary logarithm of X (2 is the base). Ex: lg(8) = 3";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         if ((*opnd) < 0)
             throw string("Logarithm: function is not defined for negatives.");
@@ -717,10 +717,10 @@ public:
         _about = "min(X1; X2;...Xn)";
         _usecase = "Minimum of any given numbers";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         int i = 0;
-        double min = *(opnd + i);
+        long double min = *(opnd + i);
         for (i = 1; i < opndcount; i++) {
             if (*(opnd + i) < min) min = (*(opnd + i));
         }
@@ -736,9 +736,9 @@ public:
         _usecase = "Maximum of any given numbers";
     }
 
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double max = *(opnd);
+        long double max = *(opnd);
         for (int i = 1; i < opndcount; i++) {
             if (*(opnd + i) > max) max = (*(opnd + i));
         }
@@ -753,9 +753,9 @@ public:
         _about = "arithmean(X1; X2;...Xn)";
         _usecase = "Arithmetic mean of given numbers";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double sum = 0;
+        long double sum = 0;
         for ( int i=0; i<opndcount; i++) {
             sum += *(opnd+i);
         }
@@ -770,9 +770,9 @@ public:
         _about = "geomean(X1; X2;...Xn)";
         _usecase = "Geometric mean of given numbers";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double res = 0;
+        long double res = 0;
         for (int i = 0; i < opndcount; i++) {
             res *= *(opnd + i);
         }
@@ -788,9 +788,9 @@ public:
         _about = "harmean(X1; X2;...Xn)";
         _usecase = "Harmonic mean of given numbers";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double res = 0;
+        long double res = 0;
         for (int i = 0; i < opndcount; ++i) {
             res += 1 / (*(opnd + i));
         }
@@ -805,9 +805,9 @@ public:
         _about = "median(X1; X2;...Xn)";
         _usecase = "Median of given numbers";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        vector<double> vec;
+        vector<long double> vec;
         for (size_t i = 0; i < opndcount; i++)  vec.push_back(*(opnd + i));
         sort(vec.begin(), vec.end());
         auto vs = vec.size();
@@ -822,9 +822,9 @@ public:
         _about = "var(X1; X2;...Xn)";
         _usecase = "Variance of given numbers";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
-        double average{ 0 }, result{ 0 };
+        long double average{ 0 }, result{ 0 };
         for (size_t i = 0; i < opndcount; i++) 
             average += *(opnd + i);
         average /= opndcount;
@@ -843,7 +843,7 @@ public:
         _about = "arithprog(base; ratio; elem_count)";
         _usecase = "Arithmetic progression. Ex: arithprog(10; 1; 3) = 33";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override 
+    long double Exec(const long double opnd[], int opndcount, string str)  const override 
     {
         if (*(opnd+2) <= 0 )
             throw string("Arithmetic progression: Number of elements cannot be negative or zero.");
@@ -858,16 +858,16 @@ public:
     GeometricProgression() : CompoundStart("geoprog(", 3)
     {
         _about = "geoprog(base; ratio; elem_count)";
-        _usecase = "Geometric progression. Ex: geoprog(8; 1/2; 3) = 14";
+        _usecase = "Geometric progression. Ex: geoprog(8; 1/2; 3) = 8 + 4 + 2 = 14";
     }
-    double Exec(const double opnd[], int opndcount, string str)  const override
+    long double Exec(const long double opnd[], int opndcount, string str)  const override
     {
         if (round(*(opnd + 2)) < 0)
             throw string("Geometric progression: Number of elements can't be negative.");
         if (round(*(opnd + 2)) == 0 && (*(opnd + 1) >= 1))
             throw string("Geometric progression: Common ratio (second opnd) must be < 1.");
 
-        double oper3 = round(*(opnd + 2));
+        long double oper3 = round(*(opnd + 2));
         if ((*(opnd + 1)) == 1) // если это не прогрессия
             return (*opnd) * oper3;  //то вернуть колво членов умнож-е на первоый член
         else if ((!oper3) && (*(opnd + 1)) < 1) //это убывающая прогр-сия и нужна вся сумма
